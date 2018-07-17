@@ -1,0 +1,17 @@
+.idea/*
+*.bkp
+*.egg-info
+*.pyc
+.DS_Store
+.ipynb*
+.coverage
+.python-version
+
+**/.settings/
+**/target/
+**/.project
+**/.project
+**/.classpath
+**/*.iml
+**/*.log.gz
+**/*.log
