@@ -133,11 +133,9 @@ object Hive2BigQuery {
         } else if ("NUMERIC".equalsIgnoreCase(columnType)) {
           val value: Double = row.getAs[Double](columnName)
           jsonObject.addProperty(columnName, value)
-          Boolean
         } else if ("BOOLEAN".equalsIgnoreCase(columnType)) {
           val value: Boolean = row.getAs[Boolean](columnName)
           jsonObject.addProperty(columnName, value)
-
         } else {
           val value: String = String.valueOf(row.getAs[Any](columnName))
           jsonObject.addProperty(columnName, value)
