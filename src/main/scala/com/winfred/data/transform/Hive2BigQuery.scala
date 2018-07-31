@@ -105,15 +105,38 @@ object Hive2BigQuery {
     val schemaStr = bigQueryEntity.getSchemaStr
     // yyyy/MM/dd 构造目录结构用
     val targetDate = bigQueryEntity.getTargetDate
-    val dateStr = getDateFormatDir(targetDate)
+    val dateDirStr = getDateFormatDir(targetDate)
 
     val columns: Array[String] = dataFrame.columns
+
+    val schemaMapping: util.Map[String, String] = getSchemaMapping(columns = columns, schemaStr = schemaStr)
 
     val resultRdd = dataFrame.repartition(10).rdd.map(row => {
       val jsonObject = new JsonObject()
       for (columnName <- columns) {
-        val value: String = String.valueOf(row.getAs[Any](columnName))
-        jsonObject.addProperty(columnName, value)
+        //        val value: String = String.valueOf(row.getAs[Any](columnName))
+
+        val columnType: String = schemaMapping.get(columnName)
+
+        if ("STRING".equalsIgnoreCase(columnType)) {
+          val value: String = String.valueOf(row.getAs[Any](columnName))
+          jsonObject.addProperty(columnName, value)
+        } else if ("INTEGER".equalsIgnoreCase(columnType)) {
+          val value: Int = row.getAs[Int](columnName)
+          jsonObject.addProperty(columnName, value)
+        } else if ("DOUBLE".equalsIgnoreCase(columnType)) {
+          val value: Double = row.getAs[Double](columnName)
+          jsonObject.addProperty(columnName, value)
+        } else if ("FLOAT".equalsIgnoreCase(columnType)) {
+          val value: Float = row.getAs[Float](columnName)
+          jsonObject.addProperty(columnName, value)
+        } else if ("NUMERIC".equalsIgnoreCase(columnType)) {
+          val value: Double = row.getAs[Double](columnName)
+          jsonObject.addProperty(columnName, value)
+        } else {
+          val value: String = String.valueOf(row.getAs[Any](columnName))
+          jsonObject.addProperty(columnName, value)
+        }
       }
       (null, jsonObject)
     })
@@ -135,7 +158,7 @@ object Hive2BigQuery {
     // Output parameters.
     val outputTableId = s"${projectId}:${targetDatabase}.${targetTable}"
     // Temp output bucket that is deleted upon completion of job.
-    val outputGcsPath = (s"gs://${bucket}/${tmpDir}/${targetDatabase}/${targetTable}/${dateStr}")
+    val outputGcsPath = (s"gs://${bucket}/${tmpDir}/${targetDatabase}/${targetTable}/${dateDirStr}")
 
     println(s"outputGcsPath: ${outputGcsPath}")
 
@@ -245,5 +268,28 @@ object Hive2BigQuery {
     }
     // 指定日期转化
     simpleDateFormat_dir.format(simpleDateFormat.parse(dateStr))
+  }
+
+  /**
+    * 构建schema映射
+    *
+    * @param columns
+    * @param schemaStr
+    * @return
+    */
+  def getSchemaMapping(columns: Array[String], schemaStr: String): util.Map[String, String] = {
+    val map: util.Map[String, String] = new util.HashMap[String, String]()
+    // 默认string
+    for (column <- columns) {
+      map.put(column, "STRING")
+    }
+    // schema 覆盖默认值
+    schemaStr.split(",").foreach(sch => {
+      val k_v: Array[String] = sch.split(":")
+      val key: String = k_v.apply(0).trim
+      val value: String = k_v.apply(1).toUpperCase.trim
+      map.put(key, value)
+    })
+    map
   }
 }
