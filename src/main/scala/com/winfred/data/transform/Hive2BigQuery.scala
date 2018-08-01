@@ -124,12 +124,9 @@ object Hive2BigQuery {
         } else if ("INTEGER".equalsIgnoreCase(columnType)) {
           val value: Int = row.getAs[Int](columnName)
           jsonObject.addProperty(columnName, value)
-        } else if ("DOUBLE".equalsIgnoreCase(columnType)) {
-          val value: Double = row.getAs[Double](columnName)
-          jsonObject.addProperty(columnName, value)
         } else if ("FLOAT".equalsIgnoreCase(columnType)) {
-          val value: Float = row.getAs[Float](columnName)
-          jsonObject.addProperty(columnName, value)
+          val value: AnyVal = row.getAs[AnyVal](columnName)
+          jsonObject.addProperty(columnName, if (null == value) 0.0f else value.toString.toFloat)
         } else if ("BOOLEAN".equalsIgnoreCase(columnType)) {
           val value: Boolean = row.getAs[Boolean](columnName)
           jsonObject.addProperty(columnName, value)
