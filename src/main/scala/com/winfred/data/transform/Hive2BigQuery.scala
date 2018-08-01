@@ -130,15 +130,12 @@ object Hive2BigQuery {
         } else if ("FLOAT".equalsIgnoreCase(columnType)) {
           val value: Float = row.getAs[Float](columnName)
           jsonObject.addProperty(columnName, value)
-        } else if ("NUMERIC".equalsIgnoreCase(columnType)) {
-          val value: Double = row.getAs[Double](columnName)
-          jsonObject.addProperty(columnName, value)
         } else if ("BOOLEAN".equalsIgnoreCase(columnType)) {
           val value: Boolean = row.getAs[Boolean](columnName)
           jsonObject.addProperty(columnName, value)
         } else {
-          val value: String = String.valueOf(row.getAs[Any](columnName))
-          jsonObject.addProperty(columnName, value)
+          val value: Any = row.getAs[Any](columnName)
+          jsonObject.addProperty(columnName, String.valueOf(value))
         }
       }
       (null, jsonObject)
