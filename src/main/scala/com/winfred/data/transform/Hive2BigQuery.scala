@@ -122,8 +122,8 @@ object Hive2BigQuery {
           val value: String = String.valueOf(row.getAs[Any](columnName))
           jsonObject.addProperty(columnName, value)
         } else if ("INTEGER".equalsIgnoreCase(columnType)) {
-          val value: Int = row.getAs[Int](columnName)
-          jsonObject.addProperty(columnName, value)
+          val value: AnyVal = row.getAs[AnyVal](columnName)
+          jsonObject.addProperty(columnName, if (null == value) 0 else value.toString.toLong)
         } else if ("FLOAT".equalsIgnoreCase(columnType)) {
           val value: AnyVal = row.getAs[AnyVal](columnName)
           jsonObject.addProperty(columnName, if (null == value) 0.0 else value.toString.toDouble)
