@@ -286,7 +286,10 @@ object Hive2BigQuery {
     for (column <- columns) {
       map.put(column, "STRING")
     }
-    // schema 覆盖默认值
+    if (StringUtils.isBlank(schemaStr)) {
+      return map
+    }
+    // 参数 schema 覆盖默认值
     schemaStr.split(",").foreach(sch => {
       val k_v: Array[String] = sch.split(":")
       val key: String = k_v.apply(0).trim
