@@ -160,6 +160,9 @@ object Hive2BigQuery {
     // Temp output bucket that is deleted upon completion of job.
     val outputGcsPath = (s"gs://${bucket}/${tmpDir}/${targetDatabase}/${targetTable}/${dateDirStr}")
 
+    // 删除缓存目录
+    Runtime.getRuntime.exec(s"hadoop fs -rm -r ${outputGcsPath}")
+
     println(s"outputGcsPath: ${outputGcsPath}")
 
     // Input configuration.
