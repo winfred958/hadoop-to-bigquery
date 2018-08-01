@@ -126,11 +126,12 @@ object Hive2BigQuery {
           jsonObject.addProperty(columnName, value)
         } else if ("FLOAT".equalsIgnoreCase(columnType)) {
           val value: AnyVal = row.getAs[AnyVal](columnName)
-          jsonObject.addProperty(columnName, if (null == value) 0.0f else value.toString.toFloat)
+          jsonObject.addProperty(columnName, if (null == value) 0.0 else value.toString.toDouble)
         } else if ("BOOLEAN".equalsIgnoreCase(columnType)) {
           val value: Boolean = row.getAs[Boolean](columnName)
           jsonObject.addProperty(columnName, value)
         } else {
+          // 默认 String
           val value: Any = row.getAs[Any](columnName)
           jsonObject.addProperty(columnName, String.valueOf(value))
         }
