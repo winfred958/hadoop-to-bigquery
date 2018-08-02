@@ -137,7 +137,9 @@ object Hive2BigQuery {
         }
       }
       // 删除 null value, bi
-      for (key <- jsonObject.keySet()) {
+      val jsonKeyIt = jsonObject.keySet().iterator()
+      while (jsonKeyIt.hasNext){
+        val key = jsonKeyIt.next()
         if (jsonObject.get(key) == null) {
           jsonObject.remove(key)
         }
