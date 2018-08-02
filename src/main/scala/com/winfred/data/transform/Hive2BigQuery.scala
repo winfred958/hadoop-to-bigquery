@@ -119,8 +119,8 @@ object Hive2BigQuery {
         val columnType: String = schemaMapping.get(columnName)
 
         if ("STRING".equalsIgnoreCase(columnType)) {
-          val value: String = String.valueOf(row.getAs[Any](columnName))
-          jsonObject.addProperty(columnName, value)
+          val value: Any = row.getAs[Any](columnName)
+          jsonObject.addProperty(columnName, if (null == value) null else String.valueOf(value))
         } else if ("INTEGER".equalsIgnoreCase(columnType)) {
           val value: AnyVal = row.getAs[AnyVal](columnName)
           jsonObject.addProperty(columnName, if (null == value) 0 else value.toString.toLong)
@@ -133,7 +133,13 @@ object Hive2BigQuery {
         } else {
           // 默认 String
           val value: Any = row.getAs[Any](columnName)
-          jsonObject.addProperty(columnName, String.valueOf(value))
+          jsonObject.addProperty(columnName, if (null == value) null else String.valueOf(value))
+        }
+      }
+      // 删除 null value, bi
+      for (key <- jsonObject.keySet()) {
+        if (jsonObject.get(key) == null) {
+          jsonObject.remove(key)
         }
       }
       (null, jsonObject)
