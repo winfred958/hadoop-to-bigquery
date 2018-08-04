@@ -120,7 +120,9 @@ object Hive2BigQuery {
 
         if ("STRING".equalsIgnoreCase(columnType)) {
           val value: Any = row.getAs[Any](columnName)
-          jsonObject.addProperty(columnName, if (null == value) null else String.valueOf(value))
+          if (null != value) {
+            jsonObject.addProperty(columnName, String.valueOf(value))
+          }
         } else if ("INTEGER".equalsIgnoreCase(columnType)) {
           val value: AnyVal = row.getAs[AnyVal](columnName)
           jsonObject.addProperty(columnName, if (null == value) 0 else value.toString.toLong)
@@ -133,15 +135,9 @@ object Hive2BigQuery {
         } else {
           // 默认 String
           val value: Any = row.getAs[Any](columnName)
-          jsonObject.addProperty(columnName, if (null == value) null else String.valueOf(value))
-        }
-      }
-      // 删除 null value, bi
-      val jsonKeyIt = jsonObject.keySet().iterator()
-      while (jsonKeyIt.hasNext){
-        val key = jsonKeyIt.next()
-        if (jsonObject.get(key) == null) {
-          jsonObject.remove(key)
+          if (null != value) {
+            jsonObject.addProperty(columnName, String.valueOf(value))
+          }
         }
       }
       (null, jsonObject)
