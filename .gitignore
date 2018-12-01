@@ -10,8 +10,9 @@
 **/.settings/
 **/target/
 **/.project
-**/.project
 **/.classpath
-**/*.iml
 **/*.log.gz
 **/*.log
+
+**/*.iml
+**/.idea
