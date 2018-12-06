@@ -18,13 +18,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <fastjson.version>1.2.46</fastjson.version>
-        <container.version>2.17</container.version>
-        <scala.version>2.11.8</scala.version>
-        <spark.version>2.2.1</spark.version>
+        <fastjson.version>1.2.53</fastjson.version>
+        <scala.version>2.11.12</scala.version>
+        <spark.version>2.3.2</spark.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
-        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring.version>5.1.2.RELEASE</spring.version>
         <hadoop.version>2.6.0-cdh5.8.5</hadoop.version>
         <hbase.version>1.2.0-cdh5.8.5</hbase.version>
         <slf4j.version>1.7.25</slf4j.version>
@@ -282,6 +281,15 @@
                         <javacArg>${java.version}</javacArg>
                         <javacArg>-Xlint:all,-serial,-path</javacArg>
                     </javacArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
 
