@@ -1,11 +1,10 @@
 package com.winfred.data.transform
 
-import java.util
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.types.StructField
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import com.alibaba.fastjson.JSON
-import com.google.api.services.bigquery.model.{TableFieldSchema, TableSchema}
-import com.google.gson.JsonObject
-import com.winfred.data.transform.entity.BigQueryEntity
+import scala.collection.mutable.ListBuffer
 
 /**
   * com.winfred.data.transform
@@ -18,39 +17,71 @@ object BigQuerySchemaTest {
 
   def main(args: Array[String]): Unit = {
 
-    val columns: Array[String] = Array("user_id", "dt")
+    val sparkConf = new SparkConf()
+    sparkConf.setMaster("local[*]")
 
-    val outputTableSchemaJson: TableSchema = new TableSchema()
-    val schemaList = new util.ArrayList[TableFieldSchema]()
-    for (columnName <- columns) {
-      val tableFieldSchema = new TableFieldSchema()
-      tableFieldSchema.setName(columnName)
-      tableFieldSchema.setType("STRING")
-      schemaList.add(tableFieldSchema)
-    }
-    outputTableSchemaJson.setFields(schemaList)
+    val sparkSession = SparkSession
+      .builder()
+      .appName("BigQuerySchemaTest")
+      .config(sparkConf)
+      .getOrCreate()
 
-    println(outputTableSchemaJson.getFields.toString)
+    import sparkSession.implicits._
 
+    // DataFrame 模拟数据
+    val sourceDS: DataFrame = sparkSession
+      .createDataset(Seq(
+        TestEntity(
+          order_id = "aaaaaaaa",
+          item_number = "11111111111",
+          item_quantity = 10,
+          item_sale_price = 0.55,
+          update_timestamp = System.currentTimeMillis()
+        ),
+        TestEntity(
+          order_id = "bbbbbbbbbbb",
+          item_number = "22222222",
+          item_quantity = 1,
+          item_sale_price = 100.5,
+          update_timestamp = System.currentTimeMillis()
+        )
+      ))
+      .toDF()
 
-    val jsonObject = new JsonObject()
+    sourceDS
+      .map(row => {
+        val fields: Array[StructField] = row.schema.fields
 
-    jsonObject.addProperty("a", "aasf")
-    jsonObject.addProperty("b", "aasf")
-    jsonObject.addProperty("c", "aasf")
+        val resultList = new ListBuffer[SchemaEntity]
+        for (i <- 0.until(fields.size)) {
+          val structField = fields.apply(i)
+          resultList += SchemaEntity(
+            name = structField.name,
+            typeName = structField.dataType.typeName
+          )
+        }
 
-    jsonObject.remove("a")
+        for (e <- resultList) yield e
+      })
+      .flatMap(x => x)
+      .show()
 
-
-    val keyIt = jsonObject.keySet().iterator()
-
-    while(keyIt.hasNext){
-      val key  = keyIt.next()
-
-      println(s"==${key} === ${jsonObject.get(key)}")
-    }
-
+    sparkSession.close()
 
   }
+
+  case class TestEntity(
+                         order_id: String,
+                         item_number: String,
+                         item_quantity: Int,
+                         item_sale_price: Double,
+                         update_timestamp: Long
+                       )
+
+  case class SchemaEntity(
+                           name: String,
+                           typeName: String
+                         )
+
 }
 
