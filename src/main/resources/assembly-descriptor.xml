@@ -1,0 +1,33 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>kafka-bigquery</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/google-cloud-utils</directory>
+            <outputDirectory>google-cloud-utils</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/google-cloud-utils/bin</directory>
+            <outputDirectory>google-cloud-utils/bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/target/</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>hadoop-to-bigquery.jar</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+</assembly>

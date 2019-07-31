@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.StructField
+import scala.collection.JavaConversions._
 
 object CommonRowUtils {
 
