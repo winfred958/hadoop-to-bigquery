@@ -34,6 +34,9 @@
         <bigquery-connector.version>0.10.6-hadoop2</bigquery-connector.version>
         <lombok.version>1.16.18</lombok.version>
         <commons-lang3.version>3.7</commons-lang3.version>
+
+        <!--plugins-->
+        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
     </properties>
 
     <dependencies>
@@ -372,6 +375,31 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+            <!-- release package-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+
+                <configuration>
+                    <outputDirectory>${project.build.directory}/releases/</outputDirectory>
+                    <descriptors>
+                        <descriptor>${project.basedir}/src/main/resources/assembly-descriptor.xml</descriptor>
+                    </descriptors>
+                    <useJvmChmod>true</useJvmChmod>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
